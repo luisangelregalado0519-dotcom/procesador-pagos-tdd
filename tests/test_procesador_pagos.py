@@ -42,6 +42,13 @@ class TestProcesadorPagos(unittest.TestCase):
             self.procesador.pagar(monto=-100, tarjeta="4111")
         self.pasarela.cobrar.assert_not_called()
 
+    # --- Prueba del NUEVO requisito (para la regresión) ---
+    def test_pago_menor_al_minimo_se_rechaza_sin_llamar_pasarela(self):
+        recibo = self.procesador.pagar(monto=30, tarjeta="4111")
+        self.assertEqual(recibo.estado, "rechazado")
+        self.assertEqual(recibo.motivo, "monto menor al mínimo")
+        self.pasarela.cobrar.assert_not_called()
+        self.assertEqual(len(self.repo.transacciones), 0)
 
 
 if __name__ == "__main__":

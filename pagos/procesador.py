@@ -22,8 +22,12 @@ class ProcesadorPagos:
         self._pasarela = pasarela
         self._repositorio = repositorio
 
+    MONTO_MINIMO = 50
+
     def pagar(self, monto, tarjeta):
         self._validar_monto(monto)
+        if monto < self.MONTO_MINIMO:
+            return Recibo("rechazado", monto, "monto menor al mínimo")
         respuesta = self._pasarela.cobrar(monto, tarjeta)
         if respuesta["estado"] == "aprobado":
             return self._registrar_pago(monto, tarjeta)
